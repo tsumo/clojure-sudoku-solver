@@ -1,5 +1,5 @@
 (ns clojure-sudoku.core
-  (:require [clojure-sudoku.cli :refer :all])
+  (:require [clojure-sudoku.model :refer :all])
   (:gen-class))
 
 
