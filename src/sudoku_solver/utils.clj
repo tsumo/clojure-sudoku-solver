@@ -1,5 +1,12 @@
 (ns sudoku-solver.utils)
 
+(defn cross
+  "Cross-product of two seqs"
+  [s1 s2]
+  (for [x s1
+        y s2]
+    (str x y)))
+
 (defn str-repeat
   "Multiplies string n times"
   [n s]
