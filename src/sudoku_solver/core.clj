@@ -1,5 +1,5 @@
-(ns clojure-sudoku.core
-  (:require [clojure-sudoku.model :refer :all])
+(ns sudoku-solver.core
+  (:require [sudoku-solver.model :refer :all])
   (:gen-class))
 
 

@@ -1,4 +1,5 @@
-(ns clojure-sudoku.model)
+(ns sudoku-solver.model
+  (:require [sudoku-solver.utils :refer :all]))
 
 ; Sudoku puzzle is a grid of 81 squares.
 ; Collection of nine squares (row, col or box) is a unit.
@@ -24,9 +25,9 @@
         y s2]
     (str x y)))
 
-(def rows [\A \B \C \D \E \F \G \H \I])
+(def rows "ABCDEFGHI")
 
-(def cols [\1 \2 \3 \4 \5 \6 \7 \8 \9])
+(def cols "123456789")
 
 (def squares
   "Every square on the grid"
@@ -60,6 +61,7 @@
                 squares)))
 
 ; Textual representation of the puzzle is a grid
+; Data structure that representns game state will be called values.
 
 (def starting-grid
   (str "5 3 . │ . 7 . │ . . ."
@@ -87,38 +89,35 @@
        "2 8 7 │ 4 1 9 │ 6 3 5"
        "3 4 5 │ 2 8 6 │ 1 7 9"))
 
-(defn parse-grid
+(defn grid-values
   [grid]
-  "Convert grid to a mapping of squares to collection of possible values.
-  Single value is given to the squares which are determined unambiguosly."
+  {:post [(= (count %) 81)]}
+  "Convert grid to a mapping of squares to values.
+  Dots and zeros represent emtpy squares."
   (->> grid
-       (filter (set (conj cols \.)))
-       (map #(if (= % \.) (range 1 10) (Character/digit % 10)))
+       (filter (set (str cols \. \0)))
        (zipmap squares)))
 
+(defn parse-grid
+  [grid]
+  "Convert grid to a mapping of squares to collection of possible values
+  or return false if contradiction is detected."
+  (into {} (map (fn [[k v]]
+                  (if (or (= v \.) (= v \0))
+                    [k cols]
+                    [k (str v)]))
+                (grid-values grid))))
 
-; Printing
-
-; (defn get-cell-string
-;   "Printable representation of a single cell"
-;   [[value _]]
-;   (if (= value 0) \. value))
-;
-;
-; (defn get-row-string
-;   "Printable representation of a single row"
-;   [row]
-;   (clojure.string/join
-;     " │ "
-;     (map #(clojure.string/join \space %)
-;          (partition 3 (map get-cell-string row)))))
-;
-;
-; (defn get-grid-string
-;   "Printable representation of a whole grid"
-;   [grid]
-;   (clojure.string/join
-;     "\n──────┼───────┼──────\n"
-;     (map #(clojure.string/join \newline %)
-;          (partition 3 (map get-row-string grid)))))
+(defn display
+  [values]
+  (let [width (apply max (map count (vals values)))
+        box-width (+ 5 (* 3 width))
+        line (clojure.string/join "┼" (repeat 3 (str-repeat box-width "─")))]
+    (doseq [r rows]
+      (doseq [c cols]
+        (print (str-center width (values (str r c)))
+               (if (or (= c \3) (= c \6)) "│" " ")))
+      (println)
+      (when (or (= r \C) (= r \F))
+        (println line)))))
 

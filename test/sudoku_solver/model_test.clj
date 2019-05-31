@@ -1,6 +1,6 @@
-(ns clojure-sudoku.model-test
+(ns sudoku-solver.model-test
   (:require [clojure.test :refer :all]
-            [clojure-sudoku.model :refer :all]))
+            [sudoku-solver.model :refer :all]))
 
 (deftest model-test
 
